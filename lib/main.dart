@@ -25,6 +25,8 @@ import 'package:path_provider/path_provider.dart';
 Future<void> main(List<String> args) async {
   final isHeadless = args.contains("--headless");
 
+  _installSystemCa();
+
   WidgetsFlutterBinding.ensureInitialized();
 
   await windowManager.ensureInitialized();
@@ -89,6 +91,38 @@ Future<void> main(List<String> args) async {
   );
   await Hive.openBox('flemozi.config');
   runApp(const ProviderScope(child: Flemozi()));
+}
+
+/// Flutter Linux builds do not ship a trusted-root store, so HTTPS calls fail
+/// with CERTIFICATE_VERIFY_FAILED on distros whose CA bundle Dart cannot find
+/// (e.g. a binary built on Ubuntu running on Fedora). Load the system CA bundle
+/// explicitly and route all HttpClients through it so GIF fetching works.
+class _SystemCaHttpOverrides extends HttpOverrides {
+  final SecurityContext _ctx;
+  _SystemCaHttpOverrides(this._ctx);
+  @override
+  HttpClient createHttpClient(SecurityContext? context) =>
+      super.createHttpClient(context ?? _ctx);
+}
+
+void _installSystemCa() {
+  const candidates = [
+    '/etc/ssl/certs/ca-certificates.crt',
+    '/etc/pki/tls/certs/ca-bundle.crt',
+    '/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem',
+    '/etc/ssl/cert.pem',
+  ];
+  for (final path in candidates) {
+    try {
+      if (!File(path).existsSync()) continue;
+      final ctx = SecurityContext(withTrustedRoots: true);
+      ctx.setTrustedCertificates(path);
+      HttpOverrides.global = _SystemCaHttpOverrides(ctx);
+      return;
+    } catch (_) {
+      // try next candidate
+    }
+  }
 }
 
 final navigatorKey = GlobalKey<NavigatorState>();

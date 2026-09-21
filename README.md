@@ -39,6 +39,13 @@ the moment they are revoked). Provide your own **free** Giphy key at runtime:
 No rebuild is needed to change it. Tenor is disabled by default; add a key at
 `~/.config/flemozi/tenor.key` (or `TENOR_API_KEY`) to re-enable it.
 
+### GIF search TLS fix
+Flutter Linux binaries do not bundle a trusted-root certificate store, so HTTPS
+requests can fail with `CERTIFICATE_VERIFY_FAILED` on distros whose CA bundle
+Dart cannot locate (for example a binary built on Ubuntu running on Fedora).
+This fork loads the system CA bundle explicitly at startup, so the GIF tab can
+reach Giphy.
+
 > No secrets or API keys are included in this repository.
 
 ## Highlights🚀
