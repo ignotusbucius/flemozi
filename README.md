@@ -7,6 +7,40 @@
     Available for Linux🐧, Windows🪟 and macOS🍎.
 </p>
 
+## 🍴 Fork additions (Linux / Wayland)
+
+This fork of Flemozi adds **Windows-style "paste on click" behaviour** to the
+emoji, emoticon and GIF pickers, plus a couple of Linux quality-of-life fixes.
+Built from the `v0.2.0` (Flutter) release.
+
+### Windows `Win + .` style auto-paste
+On upstream Flemozi you click an emoji, it goes to the clipboard, the window
+closes, and you paste it yourself. Here, selecting an emoji / emoticon / GIF
+**pastes it straight into the window you were typing in**, and the picker
+**stays open so you can insert several in a row** — just like the Windows emoji
+picker. Press `Esc` (or close the window) when you are done.
+
+Wayland does not let an application type into another window, so this uses
+[`ydotool`](https://github.com/ReimuNotMoe/ydotool) (a kernel `uinput` virtual
+input device) to send `Ctrl+V` to the previously focused window. Requirements:
+
+- `ydotool` plus a running `ydotoold` (for example a `systemd --user` service),
+  and read/write access to `/dev/uinput`.
+- The focus hand-off delay (default `160` ms) is tunable **without rebuilding**:
+  write a number of milliseconds to `~/.config/flemozi/paste_delay_ms`, or set
+  the `FLEMOZI_PASTE_DELAY_MS` environment variable.
+
+### Runtime GIF API key (no baked-in keys)
+The GIF tab no longer depends on API keys compiled into the binary (those break
+the moment they are revoked). Provide your own **free** Giphy key at runtime:
+
+- write it to `~/.config/flemozi/giphy.key`, or set `GIPHY_API_KEY`.
+
+No rebuild is needed to change it. Tenor is disabled by default; add a key at
+`~/.config/flemozi/tenor.key` (or `TENOR_API_KEY`) to re-enable it.
+
+> No secrets or API keys are included in this repository.
+
 ## Highlights🚀
 
 - Not Electron based🙃

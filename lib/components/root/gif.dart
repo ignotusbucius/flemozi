@@ -4,6 +4,7 @@ import 'package:flemozi/caching/queries.dart';
 import 'package:flemozi/components/ui/waypoint.dart';
 import 'package:flemozi/hooks/use_debounced_state.dart';
 import 'package:flemozi/intents/close_window.dart';
+import 'package:flemozi/utils/autopaste.dart';
 import 'package:flemozi/models/tenor/response_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -256,7 +257,7 @@ class Gif extends HookConsumerWidget {
                       LogicalKeyboardKey.controlRight,
                     ];
                     if (controls.none((element) => keys.contains(element))) {
-                      Actions.invoke(context, const CloseWindowIntent());
+                      await pasteAndKeepOpen();
                     }
                   }
                 }

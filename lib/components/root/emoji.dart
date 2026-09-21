@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flemozi/components/root/twemoji.dart';
 import 'package:flemozi/hooks/use_window_listeners.dart';
 import 'package:flemozi/intents/close_window.dart';
+import 'package:flemozi/utils/autopaste.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -84,9 +85,10 @@ class Emoji extends HookWidget {
       },
     );
 
-    final copyEmoji = useCallback((RatioEmojiType emoji, FocusNode focusNode) {
+    final copyEmoji =
+        useCallback((RatioEmojiType emoji, FocusNode focusNode) async {
       focusNode.requestFocus();
-      Clipboard.setData(
+      await Clipboard.setData(
         ClipboardData(text: emoji.emoji),
       );
       SnackBar snackBar = SnackBar(
@@ -120,7 +122,7 @@ class Emoji extends HookWidget {
         LogicalKeyboardKey.controlRight,
       ];
       if (controls.none((element) => keys.contains(element))) {
-        Actions.invoke(context, const CloseWindowIntent());
+        await pasteAndKeepOpen();
       }
     }, []);
 

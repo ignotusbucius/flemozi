@@ -3,6 +3,7 @@ import 'package:collection/collection.dart';
 import 'package:flemozi/collections/emoticons.dart';
 import 'package:flemozi/hooks/use_window_listeners.dart';
 import 'package:flemozi/intents/close_window.dart';
+import 'package:flemozi/utils/autopaste.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -110,9 +111,9 @@ class Emoticon extends HookWidget {
                   final tooltipKey = GlobalKey<TooltipState>();
 
                   final copyEmoticon = useCallback(
-                    () {
+                    () async {
                       focusNode.requestFocus();
-                      Clipboard.setData(
+                      await Clipboard.setData(
                         ClipboardData(text: emoticon["emoticon"]!),
                       );
                       SnackBar snackBar = SnackBar(
@@ -142,7 +143,7 @@ class Emoticon extends HookWidget {
                         LogicalKeyboardKey.controlRight,
                       ];
                       if (controls.none((element) => keys.contains(element))) {
-                        Actions.invoke(context, const CloseWindowIntent());
+                        await pasteAndKeepOpen();
                       }
                     },
                     [focusNode, emoticon["emoticon"]],

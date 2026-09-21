@@ -79,6 +79,9 @@ class Tenor {
       pos == null || pos is String || pos is int,
       'pos must be either a String or an int',
     );
+    if (apiKey.trim().isEmpty) {
+      return TenorResponsePage(results: const [], next: '');
+    }
     final response = await _request(
       'search',
       {
@@ -192,6 +195,9 @@ class Tenor {
       pos == null || pos is String || pos is int,
       'pos must be either a String or an int',
     );
+    if (apiKey.trim().isEmpty) {
+      return TenorResponsePage(results: const [], next: '');
+    }
     final response = await _request(
       'featured',
       {
