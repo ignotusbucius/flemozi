@@ -5,6 +5,7 @@ import 'package:flemozi/components/ui/waypoint.dart';
 import 'package:flemozi/hooks/use_debounced_state.dart';
 import 'package:flemozi/intents/close_window.dart';
 import 'package:flemozi/utils/autopaste.dart';
+import 'package:flemozi/utils/gif_file.dart';
 import 'package:flemozi/models/tenor/response_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -222,18 +223,15 @@ class Gif extends HookConsumerWidget {
                   if (imageFile == null) {
                     return;
                   }
+                  // Chromium-based apps (Messenger in Brave, Caprine, Discord)
+                  // flatten clipboard image data into a still bitmap. Copying
+                  // the GIF as a file (text/uri-list) makes them upload the real
+                  // animated .gif instead, just like copying it in a file
+                  // manager. ~/Downloads is used so Flatpak browsers can read it.
+                  final gifFile = await saveGifForPaste(gif, imageFile);
                   await ClipboardWriter.instance.write([
-                    DataWriterItem(suggestedName: basename(gif))
-                      ..add(Formats.png(imageFile))
-                      ..add(Formats.bmp(imageFile))
-                      ..add(Formats.webp(imageFile))
-                      ..add(Formats.gif(imageFile))
-                      ..add(Formats.tiff(imageFile))
-                      ..add(
-                        Formats.htmlText(
-                          '<meta http-equiv="content-type" content="text/html; charset=utf-8"><img src="$gif">',
-                        ),
-                      )
+                    DataWriterItem(suggestedName: basename(gifFile.path))
+                      ..add(Formats.fileUri(Uri.file(gifFile.path)))
                   ]);
                   SnackBar snackBar = SnackBar(
                     content: Row(

@@ -46,6 +46,13 @@ Dart cannot locate (for example a binary built on Ubuntu running on Fedora).
 This fork loads the system CA bundle explicitly at startup, so the GIF tab can
 reach Giphy.
 
+### Animated GIF paste in Chromium apps
+Chromium-based apps (Messenger in a browser, Caprine, Discord) turn clipboard
+image data into a still bitmap, so pasted GIFs lost their animation. GIFs are
+now saved to `~/Downloads/.flemozi/` and copied as a file (`text/uri-list`),
+which these apps upload as the real animated `.gif`. `~/Downloads` is used so
+Flatpak browsers can read it; files older than a day are cleaned up.
+
 > No secrets or API keys are included in this repository.
 
 ## Highlights🚀
